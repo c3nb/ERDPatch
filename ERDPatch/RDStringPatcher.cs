@@ -13,7 +13,7 @@ namespace ERDPatch
         }
         public static void RemoveString(string key)
         {
-            texts[key] = new Text(key);
+            texts[key] = new Text(true);
         }
         public static void SetString(string key, string str)
         {
