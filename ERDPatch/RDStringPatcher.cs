@@ -1,27 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
+using UnityEngine;
 
 namespace ERDPatch
 {
     public static class RDStringPatcher
     {
-        private static Dictionary<string, Text> texts;
+        private static Dictionary<string, string> texts;
         public static void AddString(string key, string str)
         {
-            texts.Add(key, new Text(str));
+            texts.Add(key, str);
         }
         public static void RemoveString(string key)
         {
-            texts[key] = new Text(true);
+            texts[key] = null;
         }
         public static void SetString(string key, string str)
         {
-            texts[key] = new Text(str);
+            texts[key] = str;
         }
         static RDStringPatcher()
         {
-            texts = new Dictionary<string, Text>();
+            texts = new Dictionary<string, string>();
             Main.Harmony.Patch(Main.GWC, new HarmonyMethod(typeof(RDStringPatcher).GetMethod(nameof(GWCPatch), (BindingFlags)15420)));
         }
         private static bool GWCPatch(string key, out bool exists, Dictionary<string, object> parameters, ref string __result)
@@ -29,27 +30,12 @@ namespace ERDPatch
             exists = false;
             if (texts.TryGetValue(key, out var text))
             {
-                exists = !text.removed;
-                __result = text.text ?? string.Empty;
+                exists = text != null;
+                __result = text ?? string.Empty;
                 if (exists) __result = RDString.ReplaceParameters(__result, parameters);
                 return false;
             }
             return true;
-        }
-        struct Text
-        {
-            public Text(string s)
-            {
-                text = s;
-                removed = false;
-            }
-            public Text(bool removed)
-            {
-                text = null;
-                this.removed = removed;
-            }
-            public string text;
-            public bool removed;
         }
     }
 }
