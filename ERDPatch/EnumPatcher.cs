@@ -10,7 +10,7 @@ namespace ERDPatch
     {
         private static Type thisType = typeof(T);
         private static Dictionary<string, ulong> values;
-        private static readonly object van;
+        internal static readonly object van;
         public static void AddField(string name, ulong value)
         {
             values.Add(name, value);
@@ -40,17 +40,7 @@ namespace ERDPatch
             var v = Main.VAN_Values(van);
             for (int i = 0; i < n.Length; i++)
                 values[n[i]] = v[i];
-            Main.Harmony.Patch(Main.GEN, new HarmonyMethod(typeof(EnumPatcher<T>).GetMethod(nameof(GENPatch), (BindingFlags)15420)));
-        }
-        private static bool GENPatch(Type __instance, object value, ref string __result)
-        {
-            if (__instance != thisType) return true;
-            if (value == null) return true;
-            Type type = value.GetType();
-            var i = Array.IndexOf(Main.VAN_Values(van), Convert.ToUInt64(value));
-            if (i >= 0) __result = Main.VAN_Names(van)[i];
-            else __result = null;
-            return false;
+            Main.Harmony.Patch(Main.GEN, new HarmonyMethod(typeof(Main).GetMethod(nameof(Main.GENPatch), (BindingFlags)15420).MakeGenericMethod(typeof(T))));
         }
         private static void UpdateVan()
         {
