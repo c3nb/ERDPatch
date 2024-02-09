@@ -40,7 +40,7 @@ namespace ERDPatch
             var v = Main.VAN_Values(van);
             for (int i = 0; i < n.Length; i++)
                 values[n[i]] = v[i];
-            Main.Harmony.Patch(Main.GEN, new HarmonyMethod(typeof(Main).GetMethod(nameof(Main.GENPatch), (BindingFlags)15420).MakeGenericMethod(typeof(T))));
+            Main.Harmony.Patch(Main.GEN, new HarmonyMethod(typeof(Main).GetMethod(nameof(Main.GENPatch), (BindingFlags)15420).GetGenericMethodDefinition().MakeGenericMethod(typeof(T))));
         }
         private static void UpdateVan()
         {
